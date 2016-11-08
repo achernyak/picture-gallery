@@ -1,11 +1,13 @@
 (ns picture-gallery.routes.services
-  (:require [compojure.api.sweet :refer :all]
+  (:require [compojure.api
+             [sweet :refer :all]
+             [upload :refer [TempFileUpload wrap-multipart-params]]]
             [picture-gallery.routes.services
              [auth :as auth]
+             [gallery :as gallery]
              [upload :as upload]]
             [ring.util.http-response :refer :all]
-            [schema.core :as s]
-            [compojure.api.upload :refer [wrap-multipart-params TempFileUpload]]))
+            [schema.core :as s]))
 
 (s/defschema UserRegistration
   {:id String
@@ -15,6 +17,10 @@
 (s/defschema Result
   {:result s/Keyword
    (s/optional-key :message) String})
+
+(s/defschema Gallery
+  {:owner String
+   :name String})
 
 (defapi service-routes
   {:swagger {:ui "/swagger-ui"
@@ -48,4 +54,13 @@
         :middleware [wrap-multipart-params]
         :summary "handles image upload"
         :return Result
-        (upload/save-image! (:identity req) file)))
+        (upload/save-image! (:identity req) file))
+  (GET "/gallery/:owner/:name" []
+       :summary "display user image"
+       :path-params [owner :- String name :- String]
+       (gallery/get-image owner name))
+  (GET "/list-thumbnails/:owner" []
+       :path-params [owner :- String]
+       :summary "list thumbnails for images in the gallery"
+       :return [Gallery]
+       (gallery/list-thumbnails owner)))

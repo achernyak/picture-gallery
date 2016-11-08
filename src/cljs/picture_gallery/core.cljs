@@ -5,6 +5,7 @@
             [markdown.core :refer [md->html]]
             [picture-gallery.ajax :refer [load-interceptors!]]
             [picture-gallery.components.common :as c]
+            [picture-gallery.components.gallery :as g]
             [picture-gallery.components.login :as l]
             [picture-gallery.components.registration :as reg]
             [picture-gallery.components.upload :as u]
@@ -75,6 +76,7 @@
 
 (def pages
   {:home #'home-page
+   :gallery #'g/gallery-page
    :about #'about-page})
 
 (defn page []
@@ -88,6 +90,10 @@
 
 (secretary/defroute "/" []
   (session/put! :page :home))
+
+(secretary/defroute "/gallery/:owner" [owner]
+  (g/fetch-gallery-thumbs! owner)
+  (session/put! :page :gallery))
 
 (secretary/defroute "/about" []
   (session/put! :page :about))
