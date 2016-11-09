@@ -15,3 +15,6 @@
 (defn list-thumbnails [owner]
   (ok (db/list-thumbnails {:owner owner})))
 
+(defn list-galleries []
+  (ok (db/select-gallery-previews)))
+
