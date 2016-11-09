@@ -75,9 +75,10 @@
      :compiler
      {:output-to "target/cljsbuild/public/js/app.js"
       :output-dir "target/uberjar"
-      :externs ["react/externs/react.js"]
+      :externs ["react/externs/react.js"
+                "resources/public/vendor/js/colors.js"]
       :optimizations :advanced
-      :pretty-print false
+      :pretty-print true
       :closure-warnings
       {:externs-validation :off :non-standard-jsdoc :off}}}}}
   
