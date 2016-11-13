@@ -7,7 +7,7 @@
             [ring.middleware.format :refer [wrap-restful-format]]
             [picture-gallery.config :refer [env]]
             [ring.middleware.flash :refer [wrap-flash]]
-            [immutant.web.middleware :refer [wrap-session]]
+            [ring-ttl-session.core :refer [ttl-memory-store]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
             [buddy.auth.backends.session :refer [session-backend]]
@@ -82,12 +82,12 @@
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
       wrap-auth
+      wrap-formats
       wrap-webjars
       wrap-flash
-      (wrap-session {:cookie-attrs {:http-only true}})
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
-            (dissoc :session)))
+            (assoc-in [:session :store] (ttl-memory-store (* 60 30)))))
       wrap-context
       wrap-internal-error))
